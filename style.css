@@ -14,14 +14,14 @@
 .game-header {
     display: flex;
     justify-content: space-between;
-    padding: 10px 20px;
+    padding: 5px 15px;  /* Reduced from 10px 20px */
     background-color: rgba(0, 0, 0, 0.7);
     color: #fff;
     font-weight: 700;
 }
 
 .game-area {
-    height: 400px;
+    height: 470px;
     position: relative;
     background-color: rgba(0, 0, 0, 0.5);
     overflow: hidden;
@@ -45,18 +45,20 @@
     justify-content: space-around;
     width: 100%;
     height: 70%;
-    padding: 20px;
+    padding: 10px;  /* Reduced from 20px */
     box-sizing: border-box;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 .word-choice {
-    padding: 10px 20px;
+    padding: 5px 15px;  /* Reduced from 10px 20px */
     background-color: rgba(76, 175, 80, 0.8);
     color: white;
     cursor: pointer;
     transition: all 0.3s ease;
     width: 45%;
-    height: 100%;
+    height: 20%;  /* Reduced height */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -67,6 +69,7 @@
     font-family: 'Orbitron', sans-serif;
     font-weight: 700;
     letter-spacing: 1px;
+    margin: 5px;  /* Reduced from 10px */
 }
 
 .word-choice:hover {
@@ -75,8 +78,20 @@
     transform: scale(1.05);
 }
 
+.word-choice.correct-answer {
+    background-color: rgba(76, 175, 80, 0.8) !important;
+    border-color: rgba(255, 255, 255, 1);
+    pointer-events: none;
+}
+
+.word-choice.wrong-answer {
+    background-color: rgba(244, 67, 54, 0.8) !important;
+    border-color: rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+}
+
 .definition-box {
-    padding: 20px;
+    padding: 10px;  /* Reduced from 20px */
     background-color: rgba(0, 0, 0, 0.8);
     color: white;
     position: absolute;
@@ -94,4 +109,140 @@
     position: relative;
     background-color: #f0f0f0;
     border-top: 2px solid #333;
+}
+
+.intro-container {
+    width: 100%;
+    max-width: 800px;
+    height: 600px;
+    margin: 0 auto;
+    position: relative;
+    border: 2px solid #333;
+    background: url('sci-fi.png') center center;
+    background-size: cover;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.intro-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 2rem;
+    border-radius: 10px;
+    width: 80%;
+}
+
+.intro-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+}
+
+.instructions {
+    text-align: left;
+    margin: 0 auto;
+    max-width: 500px;
+}
+
+.instructions h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.instructions ul {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+.instructions li {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.instructions li:before {
+    content: ">";
+    position: absolute;
+    left: 0;
+    color: #4CAF50;
+}
+
+.start-btn, .play-again-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    font-family: 'Orbitron', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+    margin-top: 2rem;
+}
+
+.start-btn:hover, .play-again-btn:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.7);
+}
+
+.game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 2rem;
+    border-radius: 10px;
+    border: 2px solid #4CAF50;
+    width: 80%;
+    max-width: 400px;
+}
+
+.game-over h2 {
+    color: #4CAF50;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.game-over p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.continue-btn {
+    position: absolute;
+    bottom: 15px;  /* Changed from 20px to position it below the game area */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(33, 150, 243, 0.8);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    padding: 8px 20px;
+    font-size: 18px;
+    font-family: 'Orbitron', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    z-index: 10;  /* Added to ensure button appears above other elements */
+}
+
+.continue-btn:hover {
+    background-color: rgba(33, 150, 243, 1);
+    border-color: rgba(255, 255, 255, 1);
+    transform: translateX(-50%) scale(1.05);
 }

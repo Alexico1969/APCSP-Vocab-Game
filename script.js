@@ -52,6 +52,20 @@ const vocabularyList = [
     { word: "Rogue Access Point", definition: "A wireless access point that allows an attacker unauthorized access to network traffic." }
 ];
 
+const vocabularyCategories = {
+    errors: ["Syntax Error", "Logic Error", "Run-time Error", "Overflow Error", "Roundoff"],
+    dataTypes: ["Bit", "Byte", "Analog Data"],
+    compression: ["Lossless", "Lossy", "Metadata"],
+    programming: ["Sequencing", "Selection", "Iteration", "Library", "API", "Modularity"],
+    algorithms: ["Linear Search", "Binary Search", "Reasonable Time", "Heuristic", "Undecidable", "Traversal"],
+    hardware: ["Computing Device", "Computer Network", "Bandwidth"],
+    protocols: ["Protocol", "IP", "TCP", "UDP", "HTTP"],
+    computing: ["World Wide Web", "Parallel Computing", "Speedup", "Distributed Computing"],
+    society: ["Digital Divide", "Crowdsourcing", "Citizen Science", "Creative Commons", "Open Access"],
+    security: ["PII", "Multifactor Authentication", "Encryption", "Symmetric Encryption", 
+              "Public Key Encryption", "Cookie", "Virus", "Phishing", "Rogue Access Point"]
+};
+
 let currentScore = 0;
 let lives = 3;
 let currentWordIndex = 0;
@@ -62,13 +76,40 @@ function initGame() {
     displayNewWord();
 }
 
+function getCategory(word) {
+    for (let category in vocabularyCategories) {
+        if (vocabularyCategories[category].includes(word)) {
+            return category;
+        }
+    }
+    return null;
+}
+
 function displayNewWord() {
     const correctWord = vocabularyList[currentWordIndex];
+    const correctCategory = getCategory(correctWord.word);
     
-    // Get three different wrong words
+    $('.word-choices').empty();
+    
+    // Get three different wrong words from the same category
     let wrongWords = [];
     let usedIndices = new Set([currentWordIndex]);
     
+    // First try to get words from the same category
+    const categoryWords = vocabularyList.filter((word, index) => 
+        getCategory(word.word) === correctCategory && 
+        index !== currentWordIndex
+    );
+    
+    // Shuffle category words
+    const shuffledCategoryWords = [...categoryWords].sort(() => Math.random() - 0.5);
+    
+    // Take up to 3 words from the same category
+    while (wrongWords.length < 3 && shuffledCategoryWords.length > 0) {
+        wrongWords.push(shuffledCategoryWords.pop());
+    }
+    
+    // If we need more words, get them from other categories
     while (wrongWords.length < 3) {
         let randomIndex = Math.floor(Math.random() * vocabularyList.length);
         if (!usedIndices.has(randomIndex)) {
@@ -77,35 +118,52 @@ function displayNewWord() {
         }
     }
     
-    $('.word-choices').empty();
-    
     // Combine all words and shuffle them
     let allWords = [correctWord, ...wrongWords];
     allWords.sort(() => Math.random() - 0.5);
     
+    // Create word choice buttons
     allWords.forEach(word => {
         const wordElement = $('<div>')
             .addClass('word-choice')
             .text(word.word)
-            .click(() => checkAnswer(word.word === correctWord.word));
+            .on('click', function() {
+                const isCorrect = word.word === correctWord.word;
+                if (isCorrect) {
+                    document.getElementById('correct-sound').play();
+                    updateScore(currentScore + 10);
+                    currentWordIndex = (currentWordIndex + 1) % vocabularyList.length;
+                    displayNewWord();
+                } else {
+                    document.getElementById('wrong-sound').play();
+                    updateLives(lives - 1);
+                    if (lives <= 0) {
+                        gameOver();
+                        return;
+                    }
+                    // Show correct/wrong answers
+                    $('.word-choice').each(function() {
+                        if ($(this).text() === correctWord.word) {
+                            $(this).addClass('correct-answer');
+                        } else {
+                            $(this).addClass('wrong-answer');
+                        }
+                        $(this).off('click'); // Disable further clicks
+                    });
+                    // Add continue button
+                    $('.game-area').append(`
+                        <button id="continue-btn" class="continue-btn">Continue</button>
+                    `);
+                    $('#continue-btn').on('click', function() {
+                        $(this).remove();
+                        displayNewWord();
+                    });
+                }
+            });
         $('.word-choices').append(wordElement);
     });
     
     $('#current-definition').text(correctWord.definition);
-}
-
-function checkAnswer(isCorrect) {
-    if (isCorrect) {
-        updateScore(currentScore + 10);
-        currentWordIndex = (currentWordIndex + 1) % vocabularyList.length;
-    } else {
-        updateLives(lives - 1);
-        if (lives <= 0) {
-            gameOver();
-            return;
-        }
-    }
-    displayNewWord();
 }
 
 function updateScore(newScore) {
@@ -119,33 +177,41 @@ function updateLives(newLives) {
 }
 
 function gameOver() {
+    document.getElementById('gameover-sound').play();
+    
     $('.game-area').html(`
-        <div class="game-over" style="text-align: center; padding: 20px;">
+        <div class="game-over">
             <h2>Game Over!</h2>
             <p>Final Score: ${currentScore}</p>
             <button id="play-again" class="play-again-btn">Play Again</button>
         </div>
     `);
 
-    // Add click handler for the new button
     $('#play-again').on('click', function() {
-        // Reset game state
         currentScore = 0;
         lives = 3;
         currentWordIndex = 0;
-        
-        // Restore original game area structure
         $('.game-area').html(`
             <div class="word-choices"></div>
-            <div class="player-area">
-                <div class="player"></div>
-            </div>
         `);
-        
-        // Restart the game
         initGame();
     });
 }
 
 // Start the game when document is ready
-$(document).ready(initGame);
+$(document).ready(function() {
+    // Preload sounds
+    document.getElementById('correct-sound').load();
+    document.getElementById('wrong-sound').load();
+    document.getElementById('gameover-sound').load();
+    
+    $('#start-game').click(function() {
+        $('#intro-screen').fadeOut(500, function() {
+            $('#game-screen').fadeIn(500);
+            initGame();
+        });
+    });
+    
+    // Move the original document.ready content here
+    initGame();
+});

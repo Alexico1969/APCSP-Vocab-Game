@@ -9,7 +9,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="game-container">
+    <div id="intro-screen" class="intro-container">
+        <div class="intro-content">
+            <h1>AP CSP Vocabulary Game</h1>
+            <div class="instructions">
+                <h2>How to Play</h2>
+                <ul>
+                    <li>Read the definition at the bottom of the screen</li>
+                    <li>Choose the correct term from the four options</li>
+                    <li>Gain 10 points for each correct answer</li>
+                    <li>Lose a life for each wrong answer</li>
+                    <li>Game ends when you run out of lives</li>
+                </ul>
+                <button id="start-game" class="start-btn">Start Game</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-screen" class="game-container" style="display: none;">
         <div class="game-header">
             <div class="lives">Lives: <span id="lives-count">3</span></div>
             <div class="score">Score: <span id="score-count">0</span></div>
@@ -19,16 +36,15 @@
             <div class="word-choices">
                 <!-- Word choices will be dynamically added here -->
             </div>
-            
-            <div class="player">
-                <!-- Player character -->
-            </div>
         </div>
 
         <div class="definition-box">
             <p id="current-definition">Definition will appear here...</p>
         </div>
     </div>
+    <audio id="correct-sound" src="right.wav"></audio>
+    <audio id="wrong-sound" src="wrong.wav"></audio>
+    <audio id="gameover-sound" src="beginopnieuw.wav"></audio>
     <script src="script.js"></script>
 </body>
 </html>
