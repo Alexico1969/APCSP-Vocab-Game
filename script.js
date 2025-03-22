@@ -168,7 +168,16 @@ function displayNewWord() {
 
 function updateScore(newScore) {
     currentScore = newScore;
-    $('#score-count').text(currentScore);
+    const scoreElement = $('#score-count');
+    scoreElement.text(currentScore);
+    
+    // Add animation class
+    scoreElement.addClass('score-animation');
+    
+    // Remove animation class after it completes
+    setTimeout(() => {
+        scoreElement.removeClass('score-animation');
+    }, 500);
 }
 
 function updateLives(newLives) {
