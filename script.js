@@ -68,12 +68,25 @@ const vocabularyCategories = {
 
 let currentScore = 0;
 let lives = 3;
+let wordIndexOrder = [];
 let currentWordIndex = 0;
 
 function initGame() {
+    // Create array of indices and shuffle it
+    wordIndexOrder = Array.from(Array(vocabularyList.length).keys());
+    shuffleArray(wordIndexOrder);
+    
+    currentWordIndex = 0;
     updateScore(0);
     updateLives(3);
     displayNewWord();
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
 }
 
 function getCategory(word) {
@@ -86,7 +99,7 @@ function getCategory(word) {
 }
 
 function displayNewWord() {
-    const correctWord = vocabularyList[currentWordIndex];
+    const correctWord = vocabularyList[wordIndexOrder[currentWordIndex]];
     const correctCategory = getCategory(correctWord.word);
     
     $('.word-choices').empty();
@@ -133,6 +146,10 @@ function displayNewWord() {
                     document.getElementById('correct-sound').play();
                     updateScore(currentScore + 10);
                     currentWordIndex = (currentWordIndex + 1) % vocabularyList.length;
+                    if (currentWordIndex === 0) {
+                        // Reshuffle when we've gone through all words
+                        shuffleArray(wordIndexOrder);
+                    }
                     displayNewWord();
                 } else {
                     document.getElementById('wrong-sound').play();
