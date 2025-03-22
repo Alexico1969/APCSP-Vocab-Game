@@ -49,12 +49,13 @@ const vocabularyList = [
     { word: "Cookie", definition: "A small amount of text that tracks information about a user visiting a website." },
     { word: "Virus", definition: "A type of computer malware that can replicate itself." },
     { word: "Phishing", definition: "An attack where users are tricked into revealing private information, often via deceptive emails." },
-    { word: "Rogue Access Point", definition: "A wireless access point that allows an attacker unauthorized access to network traffic." }
+    { word: "Rogue Access Point", definition: "A wireless access point that allows an attacker unauthorized access to network traffic." },
+    { word: "Array", definition: "A data structure that holds a collection of items, usually of the same type, stored in a specific order and accessed by their position (called an index)." }
 ];
 
 const vocabularyCategories = {
     errors: ["Syntax Error", "Logic Error", "Run-time Error", "Overflow Error", "Roundoff"],
-    dataTypes: ["Bit", "Byte", "Analog Data"],
+    dataTypes: ["Bit", "Byte", "Analog Data", "Array"],
     compression: ["Lossless", "Lossy", "Metadata"],
     programming: ["Sequencing", "Selection", "Iteration", "Library", "API", "Modularity"],
     algorithms: ["Linear Search", "Binary Search", "Reasonable Time", "Heuristic", "Undecidable", "Traversal"],
@@ -106,12 +107,12 @@ function displayNewWord() {
     
     // Get three different wrong words from the same category
     let wrongWords = [];
-    let usedIndices = new Set([currentWordIndex]);
+    let usedWords = new Set([correctWord.word]); // Track used words to prevent duplicates
     
     // First try to get words from the same category
-    const categoryWords = vocabularyList.filter((word, index) => 
+    const categoryWords = vocabularyList.filter(word => 
         getCategory(word.word) === correctCategory && 
-        index !== currentWordIndex
+        word.word !== correctWord.word
     );
     
     // Shuffle category words
@@ -119,15 +120,20 @@ function displayNewWord() {
     
     // Take up to 3 words from the same category
     while (wrongWords.length < 3 && shuffledCategoryWords.length > 0) {
-        wrongWords.push(shuffledCategoryWords.pop());
+        const nextWord = shuffledCategoryWords.pop();
+        if (!usedWords.has(nextWord.word)) {
+            wrongWords.push(nextWord);
+            usedWords.add(nextWord.word);
+        }
     }
     
     // If we need more words, get them from other categories
     while (wrongWords.length < 3) {
         let randomIndex = Math.floor(Math.random() * vocabularyList.length);
-        if (!usedIndices.has(randomIndex)) {
-            wrongWords.push(vocabularyList[randomIndex]);
-            usedIndices.add(randomIndex);
+        const randomWord = vocabularyList[randomIndex];
+        if (!usedWords.has(randomWord.word)) {
+            wrongWords.push(randomWord);
+            usedWords.add(randomWord.word);
         }
     }
     
@@ -195,6 +201,16 @@ function updateScore(newScore) {
     setTimeout(() => {
         scoreElement.removeClass('score-animation');
     }, 500);
+
+    // Check for win condition
+    if (currentScore >= 500) {
+        // Play victory sound if you have one
+        document.getElementById('correct-sound').play();
+        // Redirect to congratulations page
+        setTimeout(() => {
+            window.location.href = 'congratulations.html';
+        }, 1000); // Wait 1 second so the sound can play
+    }
 }
 
 function updateLives(newLives) {
